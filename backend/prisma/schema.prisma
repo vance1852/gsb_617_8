@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  passwordHash String
+  createdAt    DateTime  @default(now())
+  links        ShortLink[]
+}
+
+model ShortLink {
+  id         Int        @id @default(autoincrement())
+  code       String     @unique
+  targetUrl  String     @db.Text
+  enabled    Boolean    @default(true)
+  expiresAt  DateTime?
+  maxClicks  Int?
+  clickCount Int        @default(0)
+  remark     String?    @db.Text
+  userId     Int
+  user       User       @relation(fields: [userId], references: [id])
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  clicks     ClickLog[]
+
+  @@index([code])
+  @@index([enabled])
+}
+
+model ClickLog {
+  id        Int       @id @default(autoincrement())
+  linkId    Int
+  link      ShortLink @relation(fields: [linkId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  referer   String?   @db.Text
+  userAgent String?   @db.Text
+  ip        String?
+
+  @@index([linkId, createdAt])
+  @@index([createdAt])
+}
