@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Statistic, Table, Tag } from 'antd';
-import { LinkOutlined, ClickOutlined, FireOutlined, RiseOutlined } from '@ant-design/icons';
-import ReactECharts from 'echarts-for-react';
-import dayjs from 'dayjs';
-import api from '../utils/api';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { Card, Row, Col, Statistic, Table, Tag } from "antd";
+import {
+  LinkOutlined,
+  ThunderboltOutlined,
+  FireOutlined,
+  RiseOutlined,
+} from "@ant-design/icons";
+import ReactECharts from "echarts-for-react";
+import dayjs from "dayjs";
+import api from "../utils/api";
+import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const [data, setData] = useState({});
@@ -16,72 +21,85 @@ function Dashboard() {
 
   const fetchData = async () => {
     try {
-      const res = await api.get('/stats/dashboard');
+      const res = await api.get("/stats/dashboard");
       setData(res);
     } catch (error) {
-      console.error('Failed to fetch dashboard:', error);
+      console.error("Failed to fetch dashboard:", error);
     }
   };
 
   const chartOption = {
-    tooltip: { trigger: 'axis' },
-    grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+    tooltip: { trigger: "axis" },
+    grid: { left: "3%", right: "4%", bottom: "3%", containLabel: true },
     xAxis: {
-      type: 'category',
+      type: "category",
       boundaryGap: false,
-      data: (data.weeklyTrend || []).map(item => dayjs(item.date).format('MM-DD'))
+      data: (data.weeklyTrend || []).map((item) =>
+        dayjs(item.date).format("MM-DD"),
+      ),
     },
-    yAxis: { type: 'value' },
-    series: [{
-      name: '点击量',
-      type: 'line',
-      smooth: true,
-      areaStyle: { opacity: 0.3 },
-      data: (data.weeklyTrend || []).map(item => item.count),
-      itemStyle: { color: '#1890ff' }
-    }]
+    yAxis: { type: "value" },
+    series: [
+      {
+        name: "点击量",
+        type: "line",
+        smooth: true,
+        areaStyle: { opacity: 0.3 },
+        data: (data.weeklyTrend || []).map((item) => item.count),
+        itemStyle: { color: "#1890ff" },
+      },
+    ],
   };
 
   const columns = [
     {
-      title: '短码',
-      dataIndex: 'shortCode',
-      key: 'shortCode',
-      render: (text) => <Tag color="blue">{text}</Tag>
+      title: "短码",
+      dataIndex: "shortCode",
+      key: "shortCode",
+      render: (text) => <Tag color="blue">{text}</Tag>,
     },
     {
-      title: '目标链接',
-      dataIndex: 'longUrl',
-      key: 'longUrl',
+      title: "目标链接",
+      dataIndex: "longUrl",
+      key: "longUrl",
       ellipsis: true,
       render: (url) => (
-        <a href={url} target="_blank" rel="noopener noreferrer" style={{ maxWidth: 300, display: 'inline-block' }}>
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ maxWidth: 300, display: "inline-block" }}
+        >
           {url}
         </a>
-      )
+      ),
     },
     {
-      title: '点击数',
-      dataIndex: 'clickCount',
-      key: 'clickCount',
+      title: "点击数",
+      dataIndex: "clickCount",
+      key: "clickCount",
       sorter: (a, b) => a.clickCount - b.clickCount,
-      render: (count) => <span style={{ fontWeight: 'bold', color: '#1890ff' }}>{count}</span>
+      render: (count) => (
+        <span style={{ fontWeight: "bold", color: "#1890ff" }}>{count}</span>
+      ),
     },
     {
-      title: '状态',
-      dataIndex: 'isActive',
-      key: 'isActive',
+      title: "状态",
+      dataIndex: "isActive",
+      key: "isActive",
       render: (active) => (
-        <Tag color={active ? 'green' : 'default'}>{active ? '启用' : '停用'}</Tag>
-      )
+        <Tag color={active ? "green" : "default"}>
+          {active ? "启用" : "停用"}
+        </Tag>
+      ),
     },
     {
-      title: '操作',
-      key: 'action',
+      title: "操作",
+      key: "action",
       render: (_, record) => (
         <a onClick={() => navigate(`/stats/${record.id}`)}>查看统计</a>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -92,7 +110,7 @@ function Dashboard() {
             <Statistic
               title="短链总数"
               value={data.totalShortUrls || 0}
-              prefix={<LinkOutlined style={{ color: '#1890ff' }} />}
+              prefix={<LinkOutlined style={{ color: "#1890ff" }} />}
             />
           </Card>
         </Col>
@@ -101,7 +119,7 @@ function Dashboard() {
             <Statistic
               title="总点击数"
               value={data.totalClicks || 0}
-              prefix={<ClickOutlined style={{ color: '#52c41a' }} />}
+              prefix={<ThunderboltOutlined style={{ color: "#52c41a" }} />}
             />
           </Card>
         </Col>
@@ -110,7 +128,7 @@ function Dashboard() {
             <Statistic
               title="今日点击"
               value={data.todayClicks || 0}
-              prefix={<FireOutlined style={{ color: '#faad14' }} />}
+              prefix={<FireOutlined style={{ color: "#faad14" }} />}
             />
           </Card>
         </Col>
@@ -118,8 +136,11 @@ function Dashboard() {
           <Card>
             <Statistic
               title="近7天趋势"
-              value={(data.weeklyTrend || []).reduce((sum, item) => sum + item.count, 0)}
-              prefix={<RiseOutlined style={{ color: '#722ed1' }} />}
+              value={(data.weeklyTrend || []).reduce(
+                (sum, item) => sum + item.count,
+                0,
+              )}
+              prefix={<RiseOutlined style={{ color: "#722ed1" }} />}
             />
           </Card>
         </Col>
