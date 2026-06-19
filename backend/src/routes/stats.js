@@ -30,16 +30,17 @@ router.get("/dashboard", async (req, res) => {
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
     sevenDaysAgo.setHours(0, 0, 0, 0);
 
+    const dateExpr = fn("DATE", col("createdAt"));
     const weeklyTrend = await ClickLog.findAll({
       attributes: [
-        [fn("DATE", col("createdAt")), "date"],
+        [dateExpr, "date"],
         [fn("COUNT", "*"), "count"],
       ],
       where: {
         createdAt: { [Op.gte]: sevenDaysAgo },
       },
-      group: [literal("DATE(createdAt)")],
-      order: [[literal("DATE(createdAt)"), "ASC"]],
+      group: [dateExpr],
+      order: [[dateExpr, "ASC"]],
     });
 
     res.json({

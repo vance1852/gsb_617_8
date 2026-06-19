@@ -156,14 +156,15 @@ router.get("/:id/stats", async (req, res) => {
       return res.status(404).json({ message: "短链接不存在" });
     }
 
+    const dateExpr = fn("DATE", col("createdAt"));
     const dailyStats = await ClickLog.findAll({
       attributes: [
-        [fn("DATE", col("createdAt")), "date"],
+        [dateExpr, "date"],
         [fn("COUNT", "*"), "count"],
       ],
       where: { shortUrlId: req.params.id },
-      group: [literal("DATE(createdAt)")],
-      order: [[literal("DATE(createdAt)"), "ASC"]],
+      group: [dateExpr],
+      order: [[dateExpr, "ASC"]],
     });
 
     const recentLogs = await ClickLog.findAll({
